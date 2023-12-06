@@ -1,5 +1,25 @@
-const User = require('../models/User')
-const bcrypt = require('bcrypt')
+const User = require('../models/User');
+const bcrypt = require('bcrypt');
+
+// handle errors
+const handleError = (err) => {
+  console.log(err.message, err.code);
+
+  let errors = { email: '', password: '' };
+
+  // duplicate error code
+  if (err.code === 11000) {
+    errors.email = 'email is alredy in use';
+    return errors;
+  }
+
+  // validation errors
+  if (err.message.includes('user validation failed')) {
+    console.log(Object.values(err.errors));
+  }
+
+  return errors;
+};
 
 // @desc Signup user
 // @route GET /api/auth
@@ -19,29 +39,33 @@ const getLogin = (req, res) => {
 // @route POST /api/auth
 // @access Private
 const singupPost = async (req, res) => {
-  const { email, password } = req.body
+  const { email, password } = req.body;
 
   if (!email || !password) {
     res.status(409).json({ message: 'All fields required' });
   }
 
+  // if (password.length < 6) {
+  //   res.status(400).json({ message: 'Password must be 6 characters long' });
+  // }
+
   try {
     // Hashing Password
-    const hashedPwd = await bcrypt.hash(password, 10)
+    const hashedPwd = await bcrypt.hash(password, 10);
 
     // User obj
     const userObj = {
       email,
-      password: hashedPwd
-    }
+      password: hashedPwd,
+    };
 
     // Creating and Saving user into DB
-    const user = await User.create(userObj)
+    const user = await User.create(userObj);
 
-    res.status(201).json(user)
+    res.status(201).json(user);
   } catch (err) {
-    console.log(err);
-    res.status(400).json({ message: 'error, user not created' })
+    handleError(err);
+    res.status(400).json({ message: 'Invalid Credentials' });
   }
 };
 
