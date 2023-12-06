@@ -1,14 +1,29 @@
-const express = require('express')
+const express = require('express');
+require('dotenv').config();
+const dbConnection = require('./config/db');
+const mongoose = require('mongoose');
+const authRoutes = require('./routes/authRoutes')
+const path = require('path')
 
-const app = express()
-const PORT = process.env.PORT || 4500
+// DB
+dbConnection();
+
+const app = express();
+const PORT = process.env.PORT || 4500;
+
+// view engine
+app.set('view engine', 'ejs');
 
 // middleware
 app.use(express.static('public'))
+app.use(express.json())
 
-// view engine
-app.set('view engine', 'ejs')
+// routes
+app.use('/api/auth', authRoutes)
 
-app.listen(PORT, () => {
+mongoose.connection.once('open', () => {
+  console.log(`Connected to MongoDB`);
+  app.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);
-})
+  });
+});
