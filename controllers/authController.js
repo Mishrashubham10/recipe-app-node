@@ -1,5 +1,4 @@
 const User = require('../models/User');
-const bcrypt = require('bcrypt');
 
 // handle errors
 const handleError = (err) => {
@@ -50,13 +49,10 @@ const singupPost = async (req, res) => {
   // }
 
   try {
-    // Hashing Password
-    const hashedPwd = await bcrypt.hash(password, 10);
-
     // User obj
     const userObj = {
       email,
-      password: hashedPwd,
+      password
     };
 
     // Creating and Saving user into DB
