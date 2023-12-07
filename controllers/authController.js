@@ -92,9 +92,10 @@ const loginPost = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({ message: 'Incorrect email' });
+      return res.status(400).json({ message: 'Incorrect credentials' });
     }
 
+    // Comparing new user password to the real users password
     const match = await bcrypt.compare(password, user.password);
 
     if (!match) {
