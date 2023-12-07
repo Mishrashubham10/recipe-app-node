@@ -29,6 +29,22 @@ userShcema.pre('save', async function (next) {
   next();
 });
 
+// Static method to login user
+// userShcema.static.login = async function (email, password) {
+//   const user = await this.findOne({ email });
+
+//   if (user) {
+//     const auth = await bcrypt.compare(password, user.password);
+//     if (auth) {
+//       return user;
+//     }
+//     throw Error('Incorrect Password');
+//   }
+//   throw Error('Incorrect email');
+
+//   // Check for password
+// };
+
 const User = mongoose.model('user', userShcema);
 
 module.exports = User;

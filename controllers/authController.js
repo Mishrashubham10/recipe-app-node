@@ -1,5 +1,13 @@
 const User = require('../models/User');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+
+// Creating Token
+const createToken = (id) => {
+  return jwt.sign({ id }, process.env.SECRET, {
+    expiresIn: maxAge
+  });
+};
 
 // handle errors
 const handleError = (err) => {
@@ -45,9 +53,9 @@ const singupPost = async (req, res) => {
     res.status(409).json({ message: 'All fields required' });
   }
 
-  // if (password.length < 6) {
-  //   res.status(400).json({ message: 'Password must be 6 characters long' });
-  // }
+  if (password.length < 6) {
+    res.status(400).json({ message: 'Password must be 6 characters long' });
+  }
 
   try {
     // User obj
@@ -80,17 +88,32 @@ const loginPost = async (req, res) => {
     res.status(409).json({ message: 'All fields required' });
   }
 
-  console.log(`Your email is ${email} and Your Password ${password}`);
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Incorrect email' });
+    }
+
+    const match = await bcrypt.compare(password, user.password);
+
+    if (!match) {
+      return res.status(400).json({ message: 'Invalid Credentials' });
+    }
+
+    // Creating and sending token
+    const token = createToken(user._id)
+    res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 })
+
+    res.status(200).json({ user: user._id })
+  } catch (err) {
+    const errors = handleError(err);
+    res.status(400).json({});
+  }
 };
 
 // Creating jwt token
 const maxAge = 3 * 24 * 60 * 60;
-
-const createToken = (id) => {
-  return jwt.sign({ id }, process.env.SECRET, {
-    expiresIn: maxAge
-  });
-};
 
 module.exports = {
   getSignup,
