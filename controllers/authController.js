@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const jwt = require('jsonwebtoken')
 
 // handle errors
 const handleError = (err) => {
@@ -58,7 +59,11 @@ const singupPost = async (req, res) => {
     // Creating and Saving user into DB
     const user = await User.create(userObj);
 
-    res.status(201).json(user);
+    // Creating and Sending Cookie
+    const token = createToken(user._id)
+    res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 })
+
+    res.status(201).json({ user: user._id });
   } catch (err) {
     handleError(err);
     res.status(400).json({ message: 'Invalid Credentials' });
@@ -76,6 +81,15 @@ const loginPost = async (req, res) => {
   }
 
   console.log(`Your email is ${email} and Your Password ${password}`);
+};
+
+// Creating jwt token
+const maxAge = 3 * 24 * 60 * 60;
+
+const createToken = (id) => {
+  return jwt.sign({ id }, process.env.SECRET, {
+    expiresIn: maxAge
+  });
 };
 
 module.exports = {

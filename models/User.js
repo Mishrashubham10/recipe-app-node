@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const { isEmail } = require('validator');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
 
 const userShcema = new mongoose.Schema(
   {
@@ -23,11 +23,11 @@ const userShcema = new mongoose.Schema(
 );
 
 // fire a function before doc saved to db
-userShcema.pre('save', async function(next) {
-      // Hashing Password
-      this.password = await bcrypt.hash(this.password, 10);
+userShcema.pre('save', async function (next) {
+  // Hashing Password
+  this.password = await bcrypt.hash(this.password, 10);
   next();
-})
+});
 
 const User = mongoose.model('user', userShcema);
 
