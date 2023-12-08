@@ -31,21 +31,21 @@ const handleError = (err) => {
 
 // @desc Signup user
 // @route GET /api/auth
-// @access Private
+// @access PUBLIC
 const getSignup = (req, res) => {
   res.render('singup');
 };
 
 // @desc Loin user
 // @route GET /api/auth
-// @access Private
+// @access PUBLIC
 const getLogin = (req, res) => {
   res.render('login');
 };
 
 // @desc Signup user
 // @route POST /api/auth
-// @access Private
+// @access PUBLIC
 const singupPost = async (req, res) => {
   const { email, password } = req.body;
 
@@ -113,6 +113,14 @@ const loginPost = async (req, res) => {
   }
 };
 
+// @desc Logout user
+// @route GET /api/auth
+// @access PUBLIC
+const logout = async (req, res) => {
+  res.cookie('jwt', '', { maxAge: 1 });
+  res.redirect('/');
+}
+
 // Creating jwt token
 const maxAge = 3 * 24 * 60 * 60;
 
@@ -121,4 +129,5 @@ module.exports = {
   getLogin,
   singupPost,
   loginPost,
+  logout
 };

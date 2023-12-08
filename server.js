@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/authRoutes');
 const path = require('path');
-const requireAuth = require('./middleware/authMiddleware');
+const { requireAuth, checkUser } = require('./middleware/authMiddleware');
 
 // DB
 dbConnection();
@@ -29,6 +29,7 @@ mongoose.connection.once('open', () => {
 });
 
 // routes 
+app.get('*', checkUser);
 app.get('/', (req, res) => res.render('home'));
-app.get('/api/smoothies', (req, res) => res.render('smoothies'));
+app.get('/api/smoothies', requireAuth, (req, res) => res.render('smoothies'));
 app.use('/api/auth', authRoutes);
