@@ -117,7 +117,7 @@ const loginPost = async (req, res) => {
 // @route GET /api/auth
 // @access PUBLIC
 const logout = async (req, res) => {
-  res.cookie('jwt', '', { maxAge: 1 });
+  res.clearCookie('jwt');
   res.redirect('/');
 }
 
